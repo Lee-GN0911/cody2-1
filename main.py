@@ -11,7 +11,7 @@ def display_menu():
     print("4. 카테고리별 조회")
     print("5. 프롬프트 검색")
     print("6. 프롬프트 상세 보기")
-    print("7. 즐겨찾기 관리")
+    print("7. 즐겨찾기 설정")
     print("8. 즐겨찾기 목록")
     print("0. 종료")
 
@@ -94,7 +94,8 @@ def edit_prompt():
         
     print("1. 번호 바로 입력")
     print("2. 목록 조회 후 입력")
-    sub_choice = input("선택 (1 또는 2, 취소: 0): ")
+    print("0. 취소")
+    sub_choice = input("선택: ")
     
     if sub_choice == '0':
         print(">> 수정 작업이 취소되었습니다.")
@@ -149,20 +150,24 @@ def edit_prompt():
 
 def view_by_category():
     print("\n--- 카테고리별 조회 ---")
-    category_to_find = input("조회할 카테고리명 (취소: 0): ")
-    if category_to_find == '0':
-        print(">> 조회 작업이 취소되었습니다.")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
         return
         
-    found = False
+    # 카테고리별로 프롬프트를 묶어서 저장할 딕셔너리
+    category_dict = {}
     
     for idx, p in enumerate(prompts, 1):
-        if p["category"] == category_to_find:
-            print(f"{idx}. {p['title']}")
-            found = True
-            
-    if not found:
-        print("해당 카테고리의 프롬프트가 없습니다.")
+        cat = p["category"]
+        if cat not in category_dict:
+            category_dict[cat] = []
+        category_dict[cat].append((idx, p["title"]))
+        
+    # 묶인 카테고리와 프롬프트들을 화면에 출력
+    for cat, items in category_dict.items():
+        print(f"\n[{cat}]")
+        for idx, title in items:
+            print(f"  {idx}. {title}")
 
 def search_prompt():
     print("\n--- 프롬프트 검색 ---")
@@ -205,7 +210,26 @@ def view_prompt_detail():
         print(">> 오류: 유효한 숫자를 입력해 주세요.")
 
 def manage_favorite():
-    print("\n--- 즐겨찾기 관리 ---")
+    print("\n--- 즐겨찾기 설정 ---")
+    if not prompts:
+        print("설정할 프롬프트가 없습니다.")
+        return
+        
+    print("1. 번호 바로 입력")
+    print("2. 목록 조회 후 입력")
+    print("0. 취소")
+    sub_choice = input("선택: ")
+    
+    if sub_choice == '0':
+        print(">> 즐겨찾기 설정 작업이 취소되었습니다.")
+        return
+    elif sub_choice == '2':
+        list_prompts()
+        print() # 간격 조절용
+    elif sub_choice != '1':
+        print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
+        return
+        
     try:
         idx_str = input("상태를 변경할 프롬프트 번호 (취소: 0): ")
         if idx_str == '0':
