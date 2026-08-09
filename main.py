@@ -164,18 +164,19 @@ def edit_prompt():
         print("수정할 프롬프트가 없습니다.")
         return
         
-    print("--- Action ---")
-    print("1. 번호 바로 입력")
-    print("2. 목록 조회 후 입력")
-    print("0. 취소")
+    # 목록 바로 조회
+    for idx, p in enumerate(prompts, 1):
+        star = " ★" if p["is_favorite"] else ""
+        print(f"{idx}. [{p['category']}] {p['title']}{star}")
+        
+    print("\n--- Action ---")
+    print("1. 수정할 프롬프트 번호 입력")
+    print("0. 메인메뉴로")
     sub_choice = input("선택: ")
     
     if sub_choice == '0':
         print(">> 수정 작업이 취소되었습니다.")
         return
-    elif sub_choice == '2':
-        list_prompts(interactive=False)
-        print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
@@ -454,7 +455,6 @@ def list_favorites():
                     err_choice = input("선택: ")
                     if err_choice == '0':
                         return
-                    # err_choice가 '1'이거나 그 외의 값이면 while 루프를 통해 다시 즐겨찾기 목록 및 입력 단계로 돌아감
             except ValueError:
                 print(">> 오류: 유효한 숫자를 입력해 주세요.")
                 print("\n--- Action ---")
