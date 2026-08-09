@@ -252,11 +252,13 @@ def view_by_category():
             print(f"\n[{selected_cat} 카테고리 목록]")
             
             matched_prompts = []
-            for idx, p in enumerate(prompts, 1):
+            display_num = 1
+            for real_idx, p in enumerate(prompts):
                 if p["category"] == selected_cat:
-                    matched_prompts.append((idx, p))
+                    matched_prompts.append((display_num, real_idx, p))
                     star = " ★" if p["is_favorite"] else ""
-                    print(f"{idx}. {p['title']}{star}")
+                    print(f"{display_num}. {p['title']}{star}")
+                    display_num += 1
             
             print("\n--- Action ---")
             print("1. 조회할 프롬프트 번호 입력")
@@ -266,10 +268,15 @@ def view_by_category():
             if sub_choice == '1':
                 print("\n--- Action ---")
                 try:
-                    p_idx = int(input("조회할 프롬프트 번호: "))
-                    is_valid = any(item[0] == p_idx for item in matched_prompts)
-                    if is_valid:
-                        show_detail_by_idx(p_idx)
+                    p_num = int(input("조회할 프롬프트 번호: "))
+                    target_real_idx = None
+                    for disp_num, r_idx, _ in matched_prompts:
+                        if disp_num == p_num:
+                            target_real_idx = r_idx + 1
+                            break
+                            
+                    if target_real_idx is not None:
+                        show_detail_by_idx(target_real_idx)
                     else:
                         print(">> 오류: 해당 카테고리에 존재하지 않는 번호입니다.")
                 except ValueError:
@@ -285,24 +292,56 @@ def view_by_category():
 
 def search_prompt():
     print("\n--- 프롬프트 검색 ---")
-    print("\n--- Action ---")
-    keyword = input("검색어 (취소: 0): ")
-    if keyword == '0':
-        print(">> 검색 작업이 취소되었습니다.")
-        return
+    while True:
+        print("\n--- Action ---")
+        keyword = input("검색어 (메인메뉴로: 0): ")
         
-    found = False
-    
-    for idx, p in enumerate(prompts, 1):
-        if keyword in p["title"] or keyword in p["content"]:
-            star = " ★" if p["is_favorite"] else ""
-            print(f"{idx}. [{p['category']}] {p['title']}{star}")
-            found = True
+        if keyword == '0':
+            print(">> 검색 작업이 종료되었습니다.")
+            return
             
-    if not found:
-        print("검색어가 포함된 프롬프트가 없습니다.")
-        
-    wait_for_zero()
+        matched_results = []
+        for idx, p in enumerate(prompts, 1):
+            if keyword in p["title"] or keyword in p["content"]:
+                matched_results.append((idx, p))
+                
+        if not matched_results:
+            print(">> 검색어가 포함된 프롬프트가 없습니다. 다시 검색해 주세요.")
+        else:
+            print() # 간격 조절
+            for idx, p in enumerate(matched_results, 1):
+                star = " ★" if p[1]["is_favorite"] else ""
+                print(f"{idx}. [{p[1]['category']}] {p[1]['title']}{star}")
+                
+            print("\n--- Action ---")
+            print("1. 조회할 프롬프트 번호 입력")
+            print("0. 메인메뉴로")
+            sub_choice = input("선택: ")
+            
+            if sub_choice == '1':
+                print("\n--- Action ---")
+                try:
+                    p_num = int(input("조회할 프롬프트 번호: "))
+                    # 검색 결과 목록에서의 번호(p_num)를 실제 전체 리스트의 번호로 매핑
+                    if 1 <= p_num <= len(matched_results):
+                        real_idx = matched_results[p_num - 1][0]
+                        show_detail_by_idx(real_idx)
+                        wait_for_zero()
+                        return
+                    else:
+                        print(">> 오류: 존재하지 않는 프롬프트 번호입니다.")
+                        wait_for_zero()
+                        return
+                except ValueError:
+                    print(">> 오류: 유효한 숫자를 입력해 주세요.")
+                    wait_for_zero()
+                    return
+            elif sub_choice == '0':
+                return
+            else:
+                print(">> 잘못된 입력입니다.")
+                wait_for_zero()
+                return
 
 def view_prompt_detail():
     print("\n--- 프롬프트 상세 보기 ---")
