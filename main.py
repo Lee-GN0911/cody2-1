@@ -29,7 +29,8 @@ prompts = [
 def wait_for_zero():
     """사용자가 0을 입력할 때까지 대기하는 함수"""
     while True:
-        if input("\n>> 메인 메뉴로 돌아가려면 0을 입력하세요: ") == '0':
+        print("\n--- Action ---")
+        if input("메인 메뉴로 돌아가려면 0을 입력하세요: ") == '0':
             break
 
 def display_menu():
@@ -53,6 +54,7 @@ def add_prompt():
     step = 1
     
     while step <= 3:
+        print("\n--- Action ---")
         if step == 1:
             val = input(f"1. 제목 (현재: {title}) : " if title else "1. 제목 : ")
             if val == '0': 
@@ -136,11 +138,13 @@ def list_prompts(interactive=False):
         print(f"{idx}. [{p['category']}] {p['title']}{star}")
         
     if interactive:
-        print("\n1. 조회할 프롬프트 번호 입력")
+        print("\n--- Action ---")
+        print("1. 조회할 프롬프트 번호 입력")
         print("0. 메인메뉴로")
         choice = input("선택: ")
         
         if choice == '1':
+            print("\n--- Action ---")
             try:
                 idx = int(input("조회할 프롬프트 번호: "))
                 if show_detail_by_idx(idx):
@@ -160,6 +164,7 @@ def edit_prompt():
         print("수정할 프롬프트가 없습니다.")
         return
         
+    print("--- Action ---")
     print("1. 번호 바로 입력")
     print("2. 목록 조회 후 입력")
     print("0. 취소")
@@ -175,6 +180,7 @@ def edit_prompt():
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
         
+    print("\n--- Action ---")
     try:
         idx_str = input("수정할 프롬프트 번호 (취소: 0): ")
         if idx_str == '0':
@@ -190,6 +196,7 @@ def edit_prompt():
             step = 1
             
             while step <= 3:
+                print("\n--- Action ---")
                 if step == 1:
                     val = input(f"1. 제목 [현재: {title}]: ")
                     if val == '0': print(">> 수정이 취소되었습니다."); return
@@ -223,7 +230,6 @@ def view_by_category():
         wait_for_zero()
         return
         
-    # 1. 고유 카테고리 목록 추출
     categories = []
     for p in prompts:
         if p["category"] not in categories:
@@ -234,6 +240,7 @@ def view_by_category():
         print(f"{i}. {cat}")
     print("0. 메인메뉴로")
     
+    print("\n--- Action ---")
     cat_choice = input("조회할 카테고리 번호 선택: ")
     if cat_choice == '0':
         return
@@ -244,7 +251,6 @@ def view_by_category():
             selected_cat = categories[cat_idx - 1]
             print(f"\n[{selected_cat} 카테고리 목록]")
             
-            # 선택한 카테고리의 프롬프트들만 필터링해서 보여주기
             matched_prompts = []
             for idx, p in enumerate(prompts, 1):
                 if p["category"] == selected_cat:
@@ -252,14 +258,15 @@ def view_by_category():
                     star = " ★" if p["is_favorite"] else ""
                     print(f"{idx}. {p['title']}{star}")
             
-            print("\n1. 조회할 프롬프트 번호 입력")
+            print("\n--- Action ---")
+            print("1. 조회할 프롬프트 번호 입력")
             print("0. 메인메뉴로")
             sub_choice = input("선택: ")
             
             if sub_choice == '1':
+                print("\n--- Action ---")
                 try:
                     p_idx = int(input("조회할 프롬프트 번호: "))
-                    # 선택한 카테고리에 속한 번호인지 검증
                     is_valid = any(item[0] == p_idx for item in matched_prompts)
                     if is_valid:
                         show_detail_by_idx(p_idx)
@@ -278,6 +285,7 @@ def view_by_category():
 
 def search_prompt():
     print("\n--- 프롬프트 검색 ---")
+    print("\n--- Action ---")
     keyword = input("검색어 (취소: 0): ")
     if keyword == '0':
         print(">> 검색 작업이 취소되었습니다.")
@@ -302,6 +310,7 @@ def view_prompt_detail():
         print("조회할 프롬프트가 없습니다.")
         return
         
+    print("--- Action ---")
     print("1. 번호 바로 입력")
     print("2. 목록 조회 후 입력")
     print("0. 취소")
@@ -317,6 +326,7 @@ def view_prompt_detail():
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
         
+    print("\n--- Action ---")
     try:
         idx_str = input("조회할 프롬프트 번호 (취소: 0): ")
         if idx_str == '0':
@@ -335,6 +345,7 @@ def manage_favorite():
         print("설정할 프롬프트가 없습니다.")
         return
         
+    print("--- Action ---")
     print("1. 번호 바로 입력")
     print("2. 목록 조회 후 입력")
     print("0. 취소")
@@ -350,6 +361,7 @@ def manage_favorite():
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
         
+    print("\n--- Action ---")
     try:
         idx_str = input("상태를 변경할 프롬프트 번호 (취소: 0): ")
         if idx_str == '0':
@@ -385,6 +397,7 @@ def list_favorites():
 def main():
     while True:
         display_menu()
+        print("\n--- Action ---")
         choice = input("선택: ")
         
         if choice == '1':
