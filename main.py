@@ -4,12 +4,13 @@ prompts = []
 def display_menu():
     print("=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
-    print("2. 프롬프트 목록")
-    print("3. 카테고리별 조회")
-    print("4. 프롬프트 검색")
-    print("5. 프롬프트 상세 보기")
-    print("6. 즐겨찾기 관리")
-    print("7. 즐겨찾기 목록")
+    print("2. 프롬프트 수정")
+    print("3. 프롬프트 목록")
+    print("4. 카테고리별 조회")
+    print("5. 프롬프트 검색")
+    print("6. 프롬프트 상세 보기")
+    print("7. 즐겨찾기 관리")
+    print("8. 즐겨찾기 목록")
     print("0. 종료")
 
 def add_prompt():
@@ -27,6 +28,37 @@ def add_prompt():
     }
     prompts.append(prompt)
     print(">> 프롬프트가 성공적으로 추가되었습니다!\n")
+
+def edit_prompt():
+    print("\n--- 프롬프트 수정 ---")
+    try:
+        idx = int(input("수정할 프롬프트 번호: "))
+        if 1 <= idx <= len(prompts):
+            p = prompts[idx - 1]
+            
+            print("\n(수정하지 않으려면 아무것도 입력하지 않고 Enter를 누르세요)")
+            
+            print(f"현재 제목: {p['title']}")
+            new_title = input("새 제목: ")
+            if new_title.strip():  # 빈칸이 아니면 업데이트
+                p['title'] = new_title
+                
+            print(f"현재 카테고리: {p['category']}")
+            new_category = input("새 카테고리: ")
+            if new_category.strip():
+                p['category'] = new_category
+                
+            print(f"현재 내용:\n{p['content']}")
+            new_content = input("새 내용: ")
+            if new_content.strip():
+                p['content'] = new_content
+                
+            print(f">> {idx}번 프롬프트가 성공적으로 수정되었습니다!\n")
+        else:
+            print(">> 오류: 존재하지 않는 프롬프트 번호입니다.")
+    except ValueError:
+        print(">> 오류: 유효한 숫자를 입력해 주세요.")
+    print()
 
 def list_prompts():
     print("\n--- 프롬프트 목록 ---")
@@ -122,16 +154,18 @@ def main():
         if choice == '1':
             add_prompt()
         elif choice == '2':
-            list_prompts()
+            edit_prompt()  # 2번을 수정 기능으로 변경
         elif choice == '3':
-            view_by_category()
+            list_prompts()
         elif choice == '4':
-            search_prompt()
+            view_by_category()
         elif choice == '5':
-            view_prompt_detail()
+            search_prompt()
         elif choice == '6':
-            manage_favorite()
+            view_prompt_detail()
         elif choice == '7':
+            manage_favorite()
+        elif choice == '8':
             list_favorites()
         elif choice == '0':
             print("프로그램을 종료합니다.")
