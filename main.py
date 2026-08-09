@@ -47,7 +47,7 @@ def add_prompt():
                 category = val
                 step += 1
             elif not category: 
-                print(">> 빈칸은 입력할 수 없습니다."); continue
+                print(">> 공백. 재입력 바랍니다."); continue
             else:
                 step += 1
                 
@@ -93,7 +93,8 @@ def edit_prompt():
         
     print("1. 번호 바로 입력")
     print("2. 목록 조회 후 입력")
-    sub_choice = input("선택 (1 또는 2, 취소: 0): ")
+    print("0. 취소")
+    sub_choice = input("선택: ")
     
     if sub_choice == '0':
         print(">> 수정 작업이 취소되었습니다.\n")
