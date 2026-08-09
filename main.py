@@ -26,13 +26,19 @@ prompts = [
     }
 ]
 
+def wait_for_zero():
+    """사용자가 0을 입력할 때까지 대기하는 함수"""
+    while True:
+        if input("\n>> 메인 메뉴로 돌아가려면 0을 입력하세요: ") == '0':
+            break
+
 def display_menu():
     # 모든 작업 완료/취소 후 메인 메뉴가 뜨기 직전에 항상 출력되는 구분선
     print("\n--------------------------CLEAR------------------------")
     print("=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
     print("2. 프롬프트 수정")
-    print("3. 프롬프트 목록 조회")
+    print("3. 프롬프트 목록")
     print("4. 카테고리별 조회")
     print("5. 프롬프트 검색")
     print("6. 프롬프트 상세 보기")
@@ -103,7 +109,7 @@ def add_prompt():
     print(">> 프롬프트가 성공적으로 추가되었습니다!")
 
 def list_prompts():
-    print("\n--- 프롬프트 목록 조회 ---")
+    print("\n--- 프롬프트 목록 ---")
     if not prompts:
         print("등록된 프롬프트가 없습니다.")
         return
@@ -177,6 +183,7 @@ def view_by_category():
     print("\n--- 카테고리별 조회 ---")
     if not prompts:
         print("등록된 프롬프트가 없습니다.")
+        wait_for_zero()
         return
         
     category_dict = {}
@@ -191,6 +198,8 @@ def view_by_category():
         print(f"\n[{cat}]")
         for idx, title in items:
             print(f"  {idx}. {title}")
+            
+    wait_for_zero()
 
 def search_prompt():
     print("\n--- 프롬프트 검색 ---")
@@ -208,9 +217,30 @@ def search_prompt():
             
     if not found:
         print("검색어가 포함된 프롬프트가 없습니다.")
+        
+    wait_for_zero()
 
 def view_prompt_detail():
     print("\n--- 프롬프트 상세 보기 ---")
+    if not prompts:
+        print("조회할 프롬프트가 없습니다.")
+        return
+        
+    print("1. 번호 바로 입력")
+    print("2. 목록 조회 후 입력")
+    print("0. 취소")
+    sub_choice = input("선택: ")
+    
+    if sub_choice == '0':
+        print(">> 조회 작업이 취소되었습니다.")
+        return
+    elif sub_choice == '2':
+        list_prompts()
+        print() 
+    elif sub_choice != '1':
+        print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
+        return
+        
     try:
         idx_str = input("조회할 프롬프트 번호 (취소: 0): ")
         if idx_str == '0':
@@ -227,6 +257,9 @@ def view_prompt_detail():
             print(f"카테고리: {p['category']}")
             print(f"즐겨찾기: {fav_status}")
             print(f"내용:\n{p['content']}")
+            
+            # 내용을 다 읽고 난 후 대기
+            wait_for_zero()
         else:
             print(">> 오류: 존재하지 않는 프롬프트 번호입니다.")
     except ValueError:
@@ -282,6 +315,8 @@ def list_favorites():
             
     if not found:
         print("즐겨찾기에 등록된 프롬프트가 없습니다.")
+        
+    wait_for_zero()
 
 def main():
     while True:
@@ -294,6 +329,8 @@ def main():
             edit_prompt()
         elif choice == '3':
             list_prompts()
+            # 3번 메뉴로 목록을 조회한 경우에만 대기 적용
+            wait_for_zero()
         elif choice == '4':
             view_by_category()
         elif choice == '5':
