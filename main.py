@@ -1,5 +1,30 @@
-# 프롬프트 데이터를 저장할 리스트
-prompts = []
+# 프로그램 시작 시 기본으로 제공될 프롬프트 데이터 (더미 데이터)
+prompts = [
+    {
+        "title": "프롬프트 엔지니어링 기초",
+        "category": "가이드",
+        "content": "AI 모델에게 명확한 역할(Role)을 부여하고, 구체적인 제약 사항과 출력 형식(Format)을 지정하여 원하는 결과물의 품질을 높이는 기본 작성 가이드입니다.",
+        "is_favorite": True
+    },
+    {
+        "title": "하네스 엔지니어링 기초",
+        "category": "가이드",
+        "content": "시스템 테스트 환경 구축을 위한 테스트 하네스(Test Harness)의 개념, 그리고 스텁(Stub)과 드라이버(Driver)를 활용한 모듈 검증 방법에 대한 기초 자료입니다.",
+        "is_favorite": False
+    },
+    {
+        "title": "업무분담 원칙",
+        "category": "가이드",
+        "content": "프로젝트 진행 시 각 팀원의 R&R(Role and Responsibilities)을 명확히 정의하고, 중복 및 누락되는 업무를 방지하기 위한 작업 분배 및 커뮤니케이션 기준입니다.",
+        "is_favorite": False
+    },
+    {
+        "title": "회의록 초안 작성 프롬프트",
+        "category": "자동화",
+        "content": "회의 중 작성한 거친 메모를 붙여넣으면, '주요 안건', '결정 사항(Action Item)', '향후 일정'의 3가지 항목으로 자동 분류하여 마크다운 형식으로 정리해 주는 프롬프트입니다.",
+        "is_favorite": True
+    }
+]
 
 def display_menu():
     # 모든 작업 완료/취소 후 메인 메뉴가 뜨기 직전에 항상 출력되는 구분선
@@ -7,7 +32,7 @@ def display_menu():
     print("=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
     print("2. 프롬프트 수정")
-    print("3. 프롬프트 목록")
+    print("3. 프롬프트 목록 조회")
     print("4. 카테고리별 조회")
     print("5. 프롬프트 검색")
     print("6. 프롬프트 상세 보기")
@@ -78,7 +103,7 @@ def add_prompt():
     print(">> 프롬프트가 성공적으로 추가되었습니다!")
 
 def list_prompts():
-    print("\n--- 프롬프트 목록 ---")
+    print("\n--- 프롬프트 목록 조회 ---")
     if not prompts:
         print("등록된 프롬프트가 없습니다.")
         return
@@ -102,7 +127,7 @@ def edit_prompt():
         return
     elif sub_choice == '2':
         list_prompts()
-        print() # 간격 조절용
+        print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
@@ -154,7 +179,6 @@ def view_by_category():
         print("등록된 프롬프트가 없습니다.")
         return
         
-    # 카테고리별로 프롬프트를 묶어서 저장할 딕셔너리
     category_dict = {}
     
     for idx, p in enumerate(prompts, 1):
@@ -163,7 +187,6 @@ def view_by_category():
             category_dict[cat] = []
         category_dict[cat].append((idx, p["title"]))
         
-    # 묶인 카테고리와 프롬프트들을 화면에 출력
     for cat, items in category_dict.items():
         print(f"\n[{cat}]")
         for idx, title in items:
@@ -225,7 +248,7 @@ def manage_favorite():
         return
     elif sub_choice == '2':
         list_prompts()
-        print() # 간격 조절용
+        print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
