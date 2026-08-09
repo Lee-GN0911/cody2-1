@@ -308,7 +308,7 @@ def search_prompt():
         if not matched_results:
             print(">> 검색어가 포함된 프롬프트가 없습니다. 다시 검색해 주세요.")
         else:
-            print() # 간격 조절
+            print() 
             for idx, p in enumerate(matched_results, 1):
                 star = " ★" if p[1]["is_favorite"] else ""
                 print(f"{idx}. [{p[1]['category']}] {p[1]['title']}{star}")
@@ -322,7 +322,6 @@ def search_prompt():
                 print("\n--- Action ---")
                 try:
                     p_num = int(input("조회할 프롬프트 번호: "))
-                    # 검색 결과 목록에서의 번호(p_num)를 실제 전체 리스트의 번호로 매핑
                     if 1 <= p_num <= len(matched_results):
                         real_idx = matched_results[p_num - 1][0]
                         show_detail_by_idx(real_idx)
@@ -420,18 +419,56 @@ def manage_favorite():
         print(">> 오류: 유효한 숫자를 입력해 주세요.")
 
 def list_favorites():
-    print("\n--- 즐겨찾기 목록 ---")
-    found = False
-    
-    for idx, p in enumerate(prompts, 1):
-        if p["is_favorite"]:
-            print(f"{idx}. [{p['category']}] {p['title']} ★")
-            found = True
-            
-    if not found:
-        print("즐겨찾기에 등록된 프롬프트가 없습니다.")
+    while True:
+        print("\n--- 즐겨찾기 목록 ---")
+        found = False
         
-    wait_for_zero()
+        for idx, p in enumerate(prompts, 1):
+            if p["is_favorite"]:
+                print(f"{idx}. [{p['category']}] {p['title']} ★")
+                found = True
+                
+        if not found:
+            print("즐겨찾기에 등록된 프롬프트가 없습니다.")
+            wait_for_zero()
+            return
+            
+        print("\n--- Action ---")
+        print("1. 조회할 프롬프트 번호 입력")
+        print("0. 메인메뉴로")
+        choice = input("선택: ")
+        
+        if choice == '1':
+            print("\n--- Action ---")
+            try:
+                idx = int(input("조회할 프롬프트 번호: "))
+                if 1 <= idx <= len(prompts) and prompts[idx - 1]["is_favorite"]:
+                    show_detail_by_idx(idx)
+                    wait_for_zero()
+                    return
+                else:
+                    print(">> 오류: 즐겨찾기 목록에 존재하지 않는 번호입니다.")
+                    print("\n--- Action ---")
+                    print("1. 재선택")
+                    print("0. 메인 메뉴로")
+                    err_choice = input("선택: ")
+                    if err_choice == '0':
+                        return
+                    # err_choice가 '1'이거나 그 외의 값이면 while 루프를 통해 다시 즐겨찾기 목록 및 입력 단계로 돌아감
+            except ValueError:
+                print(">> 오류: 유효한 숫자를 입력해 주세요.")
+                print("\n--- Action ---")
+                print("1. 재선택")
+                print("0. 메인 메뉴로")
+                err_choice = input("선택: ")
+                if err_choice == '0':
+                    return
+        elif choice == '0':
+            return
+        else:
+            print(">> 잘못된 입력입니다.")
+            wait_for_zero()
+            return
 
 def main():
     while True:
