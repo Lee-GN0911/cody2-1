@@ -115,7 +115,9 @@ def list_prompts():
         return
     
     for idx, p in enumerate(prompts, 1):
-        print(f"{idx}. [{p['category']}] {p['title']}")
+        # 즐겨찾기 등록 여부에 따라 제목 우측에 별 표시
+        star = " ★" if p["is_favorite"] else ""
+        print(f"{idx}. [{p['category']}] {p['title']}{star}")
 
 def edit_prompt():
     print("\n--- 프롬프트 수정 ---")
@@ -192,12 +194,13 @@ def view_by_category():
         cat = p["category"]
         if cat not in category_dict:
             category_dict[cat] = []
-        category_dict[cat].append((idx, p["title"]))
+        category_dict[cat].append((idx, p["title"], p["is_favorite"]))
         
     for cat, items in category_dict.items():
         print(f"\n[{cat}]")
-        for idx, title in items:
-            print(f"  {idx}. {title}")
+        for idx, title, is_fav in items:
+            star = " ★" if is_fav else ""
+            print(f"  {idx}. {title}{star}")
             
     wait_for_zero()
 
@@ -212,7 +215,8 @@ def search_prompt():
     
     for idx, p in enumerate(prompts, 1):
         if keyword in p["title"] or keyword in p["content"]:
-            print(f"{idx}. [{p['category']}] {p['title']}")
+            star = " ★" if p["is_favorite"] else ""
+            print(f"{idx}. [{p['category']}] {p['title']}{star}")
             found = True
             
     if not found:
@@ -258,7 +262,6 @@ def view_prompt_detail():
             print(f"즐겨찾기: {fav_status}")
             print(f"내용:\n{p['content']}")
             
-            # 내용을 다 읽고 난 후 대기
             wait_for_zero()
         else:
             print(">> 오류: 존재하지 않는 프롬프트 번호입니다.")
@@ -310,7 +313,7 @@ def list_favorites():
     
     for idx, p in enumerate(prompts, 1):
         if p["is_favorite"]:
-            print(f"{idx}. [{p['category']}] {p['title']}")
+            print(f"{idx}. [{p['category']}] {p['title']} ★")
             found = True
             
     if not found:
@@ -329,7 +332,6 @@ def main():
             edit_prompt()
         elif choice == '3':
             list_prompts()
-            # 3번 메뉴로 목록을 조회한 경우에만 대기 적용
             wait_for_zero()
         elif choice == '4':
             view_by_category()
