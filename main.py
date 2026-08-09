@@ -42,7 +42,7 @@ def display_menu():
     print("4. 카테고리별 조회")
     print("5. 프롬프트 검색")
     print("6. 프롬프트 상세 보기")
-    print("7. 즐겨찾기 설정")
+    print("7. 즐겨찾기 등록/해제")
     print("8. 즐겨찾기 목록")
     print("0. 종료")
 
@@ -164,7 +164,6 @@ def edit_prompt():
         print("수정할 프롬프트가 없습니다.")
         return
         
-    # 목록 바로 조회
     for idx, p in enumerate(prompts, 1):
         star = " ★" if p["is_favorite"] else ""
         print(f"{idx}. [{p['category']}] {p['title']}{star}")
@@ -379,23 +378,24 @@ def view_prompt_detail():
         print(">> 오류: 유효한 숫자를 입력해 주세요.")
 
 def manage_favorite():
-    print("\n--- 즐겨찾기 설정 ---")
+    print("\n--- 즐겨찾기 등록/해제 ---")
     if not prompts:
         print("설정할 프롬프트가 없습니다.")
         return
         
-    print("--- Action ---")
-    print("1. 번호 바로 입력")
-    print("2. 목록 조회 후 입력")
-    print("0. 취소")
+    # 진입하자마자 목록 출력
+    for idx, p in enumerate(prompts, 1):
+        star = " ★" if p["is_favorite"] else ""
+        print(f"{idx}. [{p['category']}] {p['title']}{star}")
+        
+    print("\n--- Action ---")
+    print("1. 즐겨찾기 등록/변경")
+    print("0. 메인메뉴")
     sub_choice = input("선택: ")
     
     if sub_choice == '0':
-        print(">> 즐겨찾기 설정 작업이 취소되었습니다.")
+        print(">> 작업이 취소되었습니다.")
         return
-    elif sub_choice == '2':
-        list_prompts(interactive=False)
-        print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
         return
