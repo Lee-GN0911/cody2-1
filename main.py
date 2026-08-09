@@ -33,7 +33,6 @@ def wait_for_zero():
             break
 
 def display_menu():
-    # 모든 작업 완료/취소 후 메인 메뉴가 뜨기 직전에 항상 출력되는 구분선
     print("\n--------------------------CLEAR------------------------")
     print("=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -108,16 +107,52 @@ def add_prompt():
     prompts.append(prompt)
     print(">> 프롬프트가 성공적으로 추가되었습니다!")
 
-def list_prompts():
+def show_detail_by_idx(idx):
+    """특정 인덱스의 상세 정보를 출력하는 공통 함수"""
+    if 1 <= idx <= len(prompts):
+        p = prompts[idx - 1]
+        fav_status = "⭐ 등록됨" if p["is_favorite"] else "☆ 미등록"
+        
+        print("\n[상세 정보]")
+        print(f"제목: {p['title']}")
+        print(f"카테고리: {p['category']}")
+        print(f"즐겨찾기: {fav_status}")
+        print(f"내용:\n{p['content']}")
+        return True
+    else:
+        print(">> 오류: 존재하지 않는 프롬프트 번호입니다.")
+        return False
+
+def list_prompts(interactive=False):
     print("\n--- 프롬프트 목록 ---")
     if not prompts:
         print("등록된 프롬프트가 없습니다.")
+        if interactive:
+            wait_for_zero()
         return
     
     for idx, p in enumerate(prompts, 1):
-        # 즐겨찾기 등록 여부에 따라 제목 우측에 별 표시
         star = " ★" if p["is_favorite"] else ""
         print(f"{idx}. [{p['category']}] {p['title']}{star}")
+        
+    if interactive:
+        print("\n1. 조회할 프롬프트 번호 입력")
+        print("0. 메인메뉴로")
+        choice = input("선택: ")
+        
+        if choice == '1':
+            try:
+                idx = int(input("조회할 프롬프트 번호: "))
+                if show_detail_by_idx(idx):
+                    wait_for_zero()
+                else:
+                    wait_for_zero()
+            except ValueError:
+                print(">> 오류: 유효한 숫자를 입력해 주세요.")
+                wait_for_zero()
+        elif choice != '0':
+            print(">> 잘못된 입력입니다.")
+            wait_for_zero()
 
 def edit_prompt():
     print("\n--- 프롬프트 수정 ---")
@@ -134,7 +169,7 @@ def edit_prompt():
         print(">> 수정 작업이 취소되었습니다.")
         return
     elif sub_choice == '2':
-        list_prompts()
+        list_prompts(interactive=False)
         print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
@@ -188,21 +223,58 @@ def view_by_category():
         wait_for_zero()
         return
         
-    category_dict = {}
-    
-    for idx, p in enumerate(prompts, 1):
-        cat = p["category"]
-        if cat not in category_dict:
-            category_dict[cat] = []
-        category_dict[cat].append((idx, p["title"], p["is_favorite"]))
-        
-    for cat, items in category_dict.items():
-        print(f"\n[{cat}]")
-        for idx, title, is_fav in items:
-            star = " ★" if is_fav else ""
-            print(f"  {idx}. {title}{star}")
+    # 1. 고유 카테고리 목록 추출
+    categories = []
+    for p in prompts:
+        if p["category"] not in categories:
+            categories.append(p["category"])
             
-    wait_for_zero()
+    print("등록된 카테고리 목록:")
+    for i, cat in enumerate(categories, 1):
+        print(f"{i}. {cat}")
+    print("0. 메인메뉴로")
+    
+    cat_choice = input("조회할 카테고리 번호 선택: ")
+    if cat_choice == '0':
+        return
+        
+    try:
+        cat_idx = int(cat_choice)
+        if 1 <= cat_idx <= len(categories):
+            selected_cat = categories[cat_idx - 1]
+            print(f"\n[{selected_cat} 카테고리 목록]")
+            
+            # 선택한 카테고리의 프롬프트들만 필터링해서 보여주기
+            matched_prompts = []
+            for idx, p in enumerate(prompts, 1):
+                if p["category"] == selected_cat:
+                    matched_prompts.append((idx, p))
+                    star = " ★" if p["is_favorite"] else ""
+                    print(f"{idx}. {p['title']}{star}")
+            
+            print("\n1. 조회할 프롬프트 번호 입력")
+            print("0. 메인메뉴로")
+            sub_choice = input("선택: ")
+            
+            if sub_choice == '1':
+                try:
+                    p_idx = int(input("조회할 프롬프트 번호: "))
+                    # 선택한 카테고리에 속한 번호인지 검증
+                    is_valid = any(item[0] == p_idx for item in matched_prompts)
+                    if is_valid:
+                        show_detail_by_idx(p_idx)
+                    else:
+                        print(">> 오류: 해당 카테고리에 존재하지 않는 번호입니다.")
+                except ValueError:
+                    print(">> 오류: 유효한 숫자를 입력해 주세요.")
+            
+            wait_for_zero()
+        else:
+            print(">> 오류: 잘못된 번호입니다.")
+            wait_for_zero()
+    except ValueError:
+        print(">> 오류: 유효한 숫자를 입력해 주세요.")
+        wait_for_zero()
 
 def search_prompt():
     print("\n--- 프롬프트 검색 ---")
@@ -239,7 +311,7 @@ def view_prompt_detail():
         print(">> 조회 작업이 취소되었습니다.")
         return
     elif sub_choice == '2':
-        list_prompts()
+        list_prompts(interactive=False)
         print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
@@ -252,19 +324,8 @@ def view_prompt_detail():
             return
             
         idx = int(idx_str)
-        if 1 <= idx <= len(prompts):
-            p = prompts[idx - 1]
-            fav_status = "⭐ 등록됨" if p["is_favorite"] else "☆ 미등록"
-            
-            print("\n[상세 정보]")
-            print(f"제목: {p['title']}")
-            print(f"카테고리: {p['category']}")
-            print(f"즐겨찾기: {fav_status}")
-            print(f"내용:\n{p['content']}")
-            
+        if show_detail_by_idx(idx):
             wait_for_zero()
-        else:
-            print(">> 오류: 존재하지 않는 프롬프트 번호입니다.")
     except ValueError:
         print(">> 오류: 유효한 숫자를 입력해 주세요.")
 
@@ -283,7 +344,7 @@ def manage_favorite():
         print(">> 즐겨찾기 설정 작업이 취소되었습니다.")
         return
     elif sub_choice == '2':
-        list_prompts()
+        list_prompts(interactive=False)
         print() 
     elif sub_choice != '1':
         print(">> 잘못된 입력입니다. 메인 메뉴로 돌아갑니다.")
@@ -331,8 +392,7 @@ def main():
         elif choice == '2':
             edit_prompt()
         elif choice == '3':
-            list_prompts()
-            wait_for_zero()
+            list_prompts(interactive=True)
         elif choice == '4':
             view_by_category()
         elif choice == '5':
